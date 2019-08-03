@@ -12,14 +12,13 @@
 
 ActiveRecord::Schema.define(version: 2019_08_03_203621) do
 
-  create_table "customers", force: :cascade do |t|
-    t.string "email", null: false
-    t.string "lastName", null: false
-    t.string "firstName", null: false
-    t.decimal "lastOrder", precision: 5, scale: 2, default: "0.0"
-    t.decimal "lastOrder2", precision: 5, scale: 2, default: "0.0"
-    t.decimal "lastOrder3", precision: 5, scale: 2, default: "0.0"
-    t.decimal "award", precision: 5, scale: 2, default: "0.0"
+  create_table "orders", force: :cascade do |t|
+    t.integer "itemId"
+    t.string "description"
+    t.integer "customerId"
+    t.decimal "price"
+    t.decimal "award"
+    t.decimal "total"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
