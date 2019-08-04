@@ -1,23 +1,5 @@
 
 require 'httparty'
-class Customer
-
-	include HTTParty
-	
-	# default_options.update(verify: false) # Turn off SSL
-    base_uri "http://localhost:8081"
-    format :json
-
-    def Customer.id(id)
-        get('http://localhost:8081/customers?id='+id)
-    end
-    
-    def Customer.email(email)
-        get('http://localhost:8081/customers?email='+email)
-    end
-
-end
-
 class Item
 
 	include HTTParty
@@ -26,12 +8,32 @@ class Item
     base_uri "http://localhost:8082"
     format :json
     
-    def Item.id(id)
+    def id(id)
         get('http://localhost:8081/items?id='+id)
     end
     
 
 end
+
+class Customer
+
+	include HTTParty
+	
+	# default_options.update(verify: false) # Turn off SSL
+    base_uri "http://localhost:8081"
+    format :json
+
+    def id(id)
+        get('http://localhost:8081/customers?id='+id)
+    end
+    
+    def email(email)
+        get('http://localhost:8081/customers?email='+email)
+    end
+
+end
+
+
 
 
 
@@ -39,7 +41,8 @@ class OrdersController < ApplicationController
     #/GET ALL
     def index
         if params[:email]
-            customerId = Customer.email(params[:email])
+            customer = Customer.new
+            customerId = customer.email(params[:email])
             @order = Order.find_by customerId: customerId
         elsif params[:customerId]
             @order = Order.find_by customerId: params[:customerId]
@@ -54,21 +57,23 @@ class OrdersController < ApplicationController
     
     #/POST
     def create
+        customer = Customer.new
+        item = Item.new
         itemId = order_params[:itemId]
         if order_params[:customerId]
             customerId = order_params[:customerId]
         elsif order_params[:email]
-            customer = Customer.email(order_params[:email])
-            customerId = customer['email']
+            or_customer = customer.email(order_params[:email])
+            customerId = or_customer['email']
         end
         if itemId && customerId
-            if !customer
-                customer = Customer.id(customerId)
+            if !or_customer
+                or_customer = customer.id(customerId)
             end
-            item = Item.id(itemId)
-            if customer && item
-                price = item['price']
-                award = customer['award']
+            or_item = item.id(itemId)
+            if customer && or_item
+                price = or_item['price']
+                award = or_customer['award']
                 order = {itemId: itemId,
                     description: item['description'],
                     customerId: customerId,
@@ -82,7 +87,7 @@ class OrdersController < ApplicationController
                     json_response(@order,:bad_request)
                 end
             else
-                json_response({customer: customer,item: item},:bad_request)
+                json_response({customer: or_customer,item: or_item},:bad_request)
             end
             
         else

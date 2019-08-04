@@ -24,15 +24,16 @@ RSpec.describe 'OrderssController', type: :request  do
         }}
         
         context 'when the request is valid' do
-            before { post '/orders', params: valid_attributes }
-        
-            it 'Get user and create order' do
-                item = class_double ("Item")
-                customer = class_double("Customer")
+            before {
+                item = Item.new
+                customer = Customer.new
                 allow(item).to receive(:id).and_return(item_return)
                 allow(customer).to receive(:email).and_return(customer_return)
-                allow(customer).to receive(:id).and_return(customer_return)
-                
+                post '/orders', params: valid_attributes 
+                }
+        
+            it 'Get user and create order' do
+
                 puts JSON.parse(response.body)
                 expect(response).to have_http_status(201)
                  
