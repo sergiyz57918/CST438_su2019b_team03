@@ -29,13 +29,13 @@ RSpec.describe 'OrderssController', type: :request  do
             it 'Get user and create order' do
                 item = class_double ("Item")
                 customer = class_double("Customer")
-                allow(item).to recive(:show).and_return(item_return)
-                allow(customer).to recive(:show).and_return(customer_return)
+                allow(item).to receive(:id).and_return(item_return)
+                allow(customer).to receive(:email).and_return(customer_return)
+                allow(customer).to receive(:id).and_return(customer_return)
                 
+                puts JSON.parse(response.body)
                 expect(response).to have_http_status(201)
-                puts JSON.parse(response.body) 
-                
-                
+                 
             end
         end
     

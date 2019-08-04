@@ -39,7 +39,7 @@ class OrdersController < ApplicationController
     #/GET ALL
     def index
         if params[:email]
-            customerId = Customer.id(params[:email])
+            customerId = Customer.email(params[:email])
             @order = Order.find_by customerId: customerId
         elsif params[:customerId]
             @order = Order.find_by customerId: params[:customerId]
@@ -55,9 +55,16 @@ class OrdersController < ApplicationController
     #/POST
     def create
         itemId = order_params[:itemId]
-        customerId = order_params[:customerId]
+        if order_params[:customerId]
+            customerId = order_params[:customerId]
+        elsif order_params[:email]
+            customer = Customer.email(order_params[:email])
+            customerId = customer['email']
+        end
         if itemId && customerId
-            customer = Customer.id(customerId)
+            if !customer
+                customer = Customer.id(customerId)
+            end
             item = Item.id(itemId)
             if customer && item
                 price = item['price']
@@ -74,7 +81,12 @@ class OrdersController < ApplicationController
                 else
                     json_response(@order,:bad_request)
                 end
+            else
+                json_response({customer: customer,item: item},:bad_request)
             end
+            
+        else
+           json_response(order_params,:bad_request) 
         end
     end
     
@@ -93,7 +105,7 @@ class OrdersController < ApplicationController
     
     #ACCEPTED parametrs
     def order_params
-        params.permit(:itemId,:customerId)
+        params.permit(:itemId,:customerId,:email )
     end
     
 end
