@@ -1,14 +1,52 @@
+
+require 'httparty'
+class Customer
+
+	include HTTParty
+	
+	# default_options.update(verify: false) # Turn off SSL
+    base_uri "http://localhost:8081"
+    format :json
+
+    def Customer.id(id)
+        get('http://localhost:8081/customers?id='+id)
+    end
+    
+    def Customer.email(email)
+        get('http://localhost:8081/customers?email='+email)
+    end
+
+end
+
+class Item
+
+	include HTTParty
+	
+	# default_options.update(verify: false) # Turn off SSL
+    base_uri "http://localhost:8082"
+    format :json
+    
+    def Item.id(id)
+        get('http://localhost:8081/items?id='+id)
+    end
+    
+
+end
+
+
+
 class OrdersController < ApplicationController
     #/GET ALL
     def index
         if params[:email]
-            @order = Order.find_by email: params[:email]
+            customerId = Customer.id(params[:email])
+            @order = Order.find_by customerId: customerId
         elsif params[:customerId]
             @order = Order.find_by customerId: params[:customerId]
         end
         
         if @order.nil?
-            json_response({''})
+            json_response({})
         else
             json_response(@order)
         end
@@ -16,8 +54,28 @@ class OrdersController < ApplicationController
     
     #/POST
     def create
-        Order.create!(order_params)
-        json_response(@item, :created)
+        itemId = order_params[:itemId]
+        customerId = order_params[:customerId]
+        if itemId && customerId
+            customer = Customer.id(customerId)
+            item = Item.id(itemId)
+            if customer && item
+                price = item['price']
+                award = customer['award']
+                order = {itemId: itemId,
+                    description: item['description'],
+                    customerId: customerId,
+                    price: price,
+                    award: award,
+                    total: price-award}
+                @order=Order.create (order)
+                if @order
+                    json_response(@order, :created)
+                else
+                    json_response(@order,:bad_request)
+                end
+            end
+        end
     end
     
     #GET /orders/:id 

@@ -1,11 +1,13 @@
 require 'rails_helper'
-RSpec.describe 'Todos API', type: :request do
 
-    describe 'GET /orders' do
+RSpec.describe 'OrderssController', type: :request  do
+
+
+    describe 'POST /orders' do
     
     end
 
-    describe 'POST /orders' do
+    describe 'GET /orders' do
     
     end
     
