@@ -1,12 +1,6 @@
 require 'rails_helper'
 RSpec.describe 'Todos API', type: :request do
 
-    # initialize test data 
-    let!(:orders) { create_list(:orders, 10) }
-    let(:id) { orders.first.id }
-    let(:customerId) { orders.first.customerId }
-    
-    
     describe 'GET /orders' do
     
     end
