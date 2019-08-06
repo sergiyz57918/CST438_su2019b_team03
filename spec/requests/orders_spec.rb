@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 
-RSpec.describe 'OrderssController', type: :request  do
+RSpec.describe 'OrdersController', type: :request  do
 
 
     describe 'POST /orders' do

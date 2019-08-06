@@ -54,6 +54,16 @@ while menu!="quit"
         puts CRJ.id(id)
     end
 
-puts 'What do you want to do: register, email, id or quit'
+puts 'What do you want to do?'
+puts '1. Create a new order'
+puts '2. Retrieve an existing order by orderId'
+puts '3. Retrieve an existing order by customerId'
+puts '4. Retrieve an existing order by email'
+puts '5. Register a new customer'
+puts '6. Lookup a customer by id'
+puts '7. Lookup a customer by email'
+puts '8. Create a new item'
+puts '9. Lookup an item by item id'
+puts '10. Quit'
 menu = gets.chomp!
 end

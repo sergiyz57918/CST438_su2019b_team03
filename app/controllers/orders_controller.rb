@@ -9,7 +9,7 @@ class Item
     format :json
     
     def id(id)
-        get('http://localhost:8081/items?id='+id)
+        get('http://localhost:8082/items?id='+id)
     end
     
 
