@@ -3,6 +3,9 @@ require 'rails_helper'
 
 RSpec.describe 'OrdersController', type: :request  do
 
+  before(:each) do
+    @headers =  { "CONTENT_TYPE" => "application/json", "ACCEPT" => "application/json"}    
+  end
 
     describe 'POST /orders' do
         let(:valid_attributes) {{ email: 'john@dow.com', itemId: 1 } }
@@ -56,6 +59,14 @@ RSpec.describe 'OrdersController', type: :request  do
     
     describe '/orders?email=nn@nnnn' do
     
+    end
+    
+    it 'should be able to get order by id' do
+        order = Order.create(itemId: 2, customerId: 32)
+        get '/orders?id=1', :headers => @headers
+        expect(response).to have_http_status(200)   
+        orderDB = JSON.parse(response.body)
+        expect(orderDB['itemId']).to eq order.itemId
     end
 
 end
