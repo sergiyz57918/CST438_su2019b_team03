@@ -7,16 +7,16 @@ class CRJItem
 	format :json
 
   def CRJItem.getItem(id)
-    get('http://localhost:8081/items?id='+id)
+    get('http://localhost:8082/items?id='+id)
   end
   
   def CRJItem.createItem(item) 
-    post 'http://localhost:8081/items', body: item.to_json, 
+    post 'http://localhost:8082/items', body: item.to_json, 
     headers:  { 'Content-Type' => 'application/json', 'ACCEPT' => 'application/json' }
   end 
   
   def CRJItem.updateItem(item)
-    put "http://localhost:8081/items?id=#{item[:id]}", body: item.to_json, 
+    put "http://localhost:8082/items?id=#{item[:id]}", body: item.to_json, 
     headers:  { 'Content-Type' => 'application/json', 'ACCEPT' => 'application/json' }
   end
 end 
