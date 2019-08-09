@@ -13,17 +13,6 @@
 ActiveRecord::Schema.define(version: 2019_08_03_203621) do
 
   create_table "orders", force: :cascade do |t|
-    t.integer "itemId"
-    t.string "description"
-    t.integer "customerId"
-    t.decimal "price"
-    t.decimal "award"
-    t.decimal "total"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "orders", force: :cascade do |t|
     t.integer "itemId", null: false
     t.integer "customerId", null: false
     t.text "description", null: false
