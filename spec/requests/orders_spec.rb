@@ -17,6 +17,7 @@ RSpec.describe 'OrdersController', type: :request  do
         }}
         
         let (:customer_return){{
+                id:1,
                 email: 'john@dow.com',
                 lastName: 'Dow', 
                 firstName: 'John',
@@ -28,10 +29,13 @@ RSpec.describe 'OrdersController', type: :request  do
         
         context 'when the request is valid' do
             before {
-                item = Item.new
-                customer = Customer.new
+                item = class_double("Item").
+                            as_stubbed_const(:transfer_nested_constants => true)
+                customer = class_double("Customer").
+                            as_stubbed_const(:transfer_nested_constants => true)
                 allow(item).to receive(:id).and_return(item_return)
                 allow(customer).to receive(:email).and_return(customer_return)
+                
                 post '/orders', params: valid_attributes 
                 }
         
@@ -61,12 +65,6 @@ RSpec.describe 'OrdersController', type: :request  do
     
     end
     
-    it 'should be able to get order by id' do
-        order = Order.create(itemId: 2, customerId: 32)
-        get '/orders?id=1', :headers => @headers
-        expect(response).to have_http_status(200)   
-        orderDB = JSON.parse(response.body)
-        expect(orderDB['itemId']).to eq order.itemId
-    end
+
 
 end

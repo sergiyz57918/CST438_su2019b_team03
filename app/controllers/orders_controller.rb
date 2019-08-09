@@ -1,5 +1,6 @@
 
 require 'httparty'
+
 class Item
 
 	include HTTParty
@@ -8,7 +9,7 @@ class Item
     base_uri "http://localhost:8082"
     format :json
     
-    def id(id)
+    def Item.id(id)
         get('http://localhost:8082/items?id='+id)
     end
     
@@ -23,11 +24,11 @@ class Customer
     base_uri "http://localhost:8081"
     format :json
 
-    def id(id)
+    def Customer.id(id)
         get('http://localhost:8081/customers?id='+id)
     end
     
-    def email(email)
+    def Customer.email(email)
         get('http://localhost:8081/customers?email='+email)
     end
 
@@ -41,8 +42,7 @@ class OrdersController < ApplicationController
     #/GET ALL
     def index
         if params[:email]
-            customer = Customer.new
-            customerId = customer.email(params[:email])
+            customerId = Customer.email(params[:email])
             @order = Order.find_by customerId: customerId
         elsif params[:customerId]
             @order = Order.find_by customerId: params[:customerId]
@@ -57,29 +57,29 @@ class OrdersController < ApplicationController
     
     #/POST
     def create
-        customer = Customer.new
-        item = Item.new
+
         itemId = order_params[:itemId]
         if order_params[:customerId]
             customerId = order_params[:customerId]
         elsif order_params[:email]
-            or_customer = customer.email(order_params[:email])
-            customerId = or_customer['email']
+            or_customer = Customer.email(order_params[:email])
+            customerId = or_customer[:id]
         end
         if itemId && customerId
             if !or_customer
-                or_customer = customer.id(customerId)
+                or_customer = Customer.id(customerId)
             end
-            or_item = item.id(itemId)
-            if customer && or_item
-                price = or_item['price']
-                award = or_customer['award']
+            or_item = Item.id(itemId)
+            if or_customer && or_item
+                price = or_item[:price]
+                award = or_customer[:award]
+                total  = price-award
                 order = {itemId: itemId,
-                    description: item['description'],
+                    description: or_item[:description],
                     customerId: customerId,
                     price: price,
                     award: award,
-                    total: price-award}
+                    total: total}
                 @order=Order.create (order)
                 if @order
                     json_response(@order, :created)
@@ -91,7 +91,7 @@ class OrdersController < ApplicationController
             end
             
         else
-           json_response(order_params,:bad_request) 
+           json_response(or_customer['id'],:bad_request) 
         end
     end
     
