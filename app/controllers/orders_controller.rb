@@ -39,6 +39,8 @@ end
 
 
 class OrdersController < ApplicationController
+
+
     #/GET ALL
     def index
         if params[:email]
@@ -46,6 +48,8 @@ class OrdersController < ApplicationController
             @order = Order.find_by customerId: customerId
         elsif params[:customerId]
             @order = Order.find_by customerId: params[:customerId]
+        else 
+            @order =Order.all 
         end
         
         if @order.nil?
@@ -63,7 +67,7 @@ class OrdersController < ApplicationController
             customerId = order_params[:customerId]
         elsif order_params[:email]
             or_customer = Customer.email(order_params[:email])
-            customerId = or_customer[:id]
+            customerId = or_customer['id']
         end
         if itemId && customerId
             if !or_customer
@@ -71,17 +75,17 @@ class OrdersController < ApplicationController
             end
             or_item = Item.id(itemId)
             if or_customer && or_item
-                price = or_item[:price]
-                award = or_customer[:award]
+                price = or_item['price'].to_f
+                award = or_customer['award'].to_f
                 total  = price-award
                 order = {itemId: itemId,
-                    description: or_item[:description],
+                    description: or_item['description'],
                     customerId: customerId,
                     price: price,
                     award: award,
                     total: total}
-                @order=Order.create (order)
-                if @order
+                @order=Order.new (order)
+                if @order.save
                     json_response(@order, :created)
                 else
                     json_response(@order,:bad_request)
@@ -91,7 +95,7 @@ class OrdersController < ApplicationController
             end
             
         else
-           json_response(or_customer['id'],:bad_request) 
+           json_response({customer: or_customer['id'],itemId: itemId, customerId: customerId},:bad_request) 
         end
     end
     
@@ -110,7 +114,7 @@ class OrdersController < ApplicationController
     
     #ACCEPTED parametrs
     def order_params
-        params.permit(:itemId,:customerId,:email )
+        params.permit(:itemId,:email, :order )
     end
     
 end

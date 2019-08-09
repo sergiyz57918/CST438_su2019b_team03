@@ -33,8 +33,8 @@ RSpec.describe 'OrdersController', type: :request  do
                             as_stubbed_const(:transfer_nested_constants => true)
                 customer = class_double("Customer").
                             as_stubbed_const(:transfer_nested_constants => true)
-                allow(item).to receive(:id).and_return(item_return)
-                allow(customer).to receive(:email).and_return(customer_return)
+                allow(item).to receive(:id).and_return(item_return.to_json)
+                allow(customer).to receive(:email).and_return(customer_return.to_json)
                 
                 post '/orders', params: valid_attributes 
                 }
@@ -43,6 +43,8 @@ RSpec.describe 'OrdersController', type: :request  do
 
                 puts JSON.parse(response.body)
                 expect(response).to have_http_status(201)
+                get '/orders'
+                puts JSON.parse(response.body)
                  
             end
         end
