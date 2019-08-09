@@ -95,7 +95,7 @@ class OrdersController < ApplicationController
             end
             
         else
-           json_response({customer: or_customer['id'],itemId: itemId, customerId: customerId},:bad_request) 
+           json_response({customer: or_customer,itemId: itemId, customerId: customerId},:bad_request) 
         end
     end
     
