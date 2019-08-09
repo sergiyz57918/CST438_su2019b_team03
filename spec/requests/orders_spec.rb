@@ -13,11 +13,11 @@ RSpec.describe 'OrdersController', type: :request  do
                 id: 1, 
                 description: "Sexy Leya",
                 price: 99.99, 
-                stockQty:1
+                stockQty: 1
         }}
         
         let (:customer_return){{
-                id:1,
+                id: 1,
                 email: 'john@dow.com',
                 lastName: 'Dow', 
                 firstName: 'John',
@@ -33,8 +33,8 @@ RSpec.describe 'OrdersController', type: :request  do
                             as_stubbed_const(:transfer_nested_constants => true)
                 customer = class_double("Customer").
                             as_stubbed_const(:transfer_nested_constants => true)
-                allow(item).to receive(:id).and_return(item_return.to_json)
-                allow(customer).to receive(:email).and_return(customer_return.to_json)
+                allow(item).to receive(:id).and_return(item_return)
+                allow(customer).to receive(:email).and_return(customer_return)
                 
                 post '/orders', params: valid_attributes 
                 }

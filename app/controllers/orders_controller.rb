@@ -67,7 +67,7 @@ class OrdersController < ApplicationController
             customerId = order_params[:customerId]
         elsif order_params[:email]
             or_customer = Customer.email(order_params[:email])
-            customerId = or_customer['id']
+            customerId = or_customer[:id]
         end
         if itemId && customerId
             if !or_customer
@@ -75,20 +75,27 @@ class OrdersController < ApplicationController
             end
             or_item = Item.id(itemId)
             if or_customer && or_item
-                price = or_item['price'].to_f
-                award = or_customer['award'].to_f
-                total  = price-award
+                price = or_item[:price]
+                award = or_customer[:award]
+                total  = price.to_f-award.to_f
                 order = {itemId: itemId,
-                    description: or_item['description'],
+                    description: or_item[:description],
                     customerId: customerId,
                     price: price,
                     award: award,
                     total: total}
-                @order=Order.new (order)
+                @order=Order.create (order)
                 if @order.save
                     json_response(@order, :created)
                 else
-                    json_response(@order,:bad_request)
+                    json_response({
+                                    customer: or_customer,
+                                    item: or_item, 
+                                    order: @order, 
+                                    itemId: itemId,
+                                    customerId: customerId
+                        
+                    },:bad_request)
                 end
             else
                 json_response({customer: or_customer,item: or_item},:bad_request)
