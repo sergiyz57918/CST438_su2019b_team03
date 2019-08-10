@@ -74,6 +74,13 @@ RSpec.describe 'OrdersController', type: :request  do
     end
     
     describe 'GET /orders?customerId=nnn' do
+        it 'should get order by customerId' do
+            order = Order.create(id: 1, itemId: 1, description: "Wii", customerId: 7, price: 250, award: 0, total: 250);
+            get '/orders?customerId=7', :headers => @headers
+            expect(response).to have_http_status(200)
+            orderRetrieve = JSON.parse(response.body)
+            expect(orderRetrieve['description']).to eq order.description
+        end
     
     end
     
