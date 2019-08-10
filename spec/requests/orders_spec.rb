@@ -85,7 +85,13 @@ RSpec.describe 'OrdersController', type: :request  do
     end
     
     describe '/orders?email=nn@nnnn' do
-    
+        it 'should get order by email' do
+            expect(Customer).to receive(:email).with('awalker@spectre.net') do
+                [200, { id:1, lastName:'Walker', firstName:'Alan', email:'awalker@spectre.net' }]
+            end
+            get '/orders?email=awalker@spectre.net', :headers => @headers
+            expect(response).to have_http_status(200)
+        end
     end
     
 
