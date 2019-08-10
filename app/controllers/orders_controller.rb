@@ -10,7 +10,7 @@ class Item
     format :json
     
     def Item.id(id)
-        get('http://localhost:8082/items?id='+id)
+        get('http://localhost:8082/items/'+id.to_s)
     end
     
 
@@ -25,7 +25,7 @@ class Customer
     format :json
 
     def Customer.id(id)
-        get('http://localhost:8081/customers?id='+id)
+        get('http://localhost:8081/customers?id='+id.to_s)
     end
     
     def Customer.email(email)
@@ -63,50 +63,73 @@ class OrdersController < ApplicationController
     def create
 
         itemId = order_params[:itemId]
+        
         if order_params[:customerId]
             customerId = order_params[:customerId]
         elsif order_params[:email]
-            or_customer = Customer.email(order_params[:email])
-            customerId = or_customer[:id]
+     
+            or_customer = JSON.parse(Customer.email(order_params[:email]).body)
+            customerId = or_customer['id']
         end
-        if itemId && customerId
+        
+        customerId = customerId.to_i
+        itemId = itemId.to_i
+        
+        if itemId>0 && customerId>0
             if !or_customer
-                or_customer = Customer.id(customerId)
+                or_customer = JSON.parse(Customer.id(customerId).body)
             end
-            or_item = Item.id(itemId)
-            if or_customer && or_item
-                price = or_item[:price]
-                award = or_customer[:award]
+            or_item =Item.id(itemId)
+            
+            if !or_customer.nil? && !or_item.nil?
+                
+                price = or_item['price']
+                award = or_customer['award']
                 total  = price.to_f-award.to_f
-                order = {itemId: itemId,
-                    description: or_item[:description],
+                
+                description  = or_item['description']
+                
+                order = {
+                    itemId: itemId,
                     customerId: customerId,
+                    description: description,
                     price: price,
                     award: award,
-                    total: total}
-                @order=Order.create (order)
+                    total: total                    
+            
+                }
+                
+                @order=Order.new (order)
                 if @order.save
-                    json_response(@order, :created)
+                    json_response(  @order, :created)
                 else
                     json_response({
-                                    customer: or_customer,
-                                    item: or_item, 
-                                    order: @order, 
-                                    itemId: itemId,
-                                    customerId: customerId
+                                item: or_item,
+                                order: @order, 
+                                itemId: itemId,
+                                customerId: customerId,
+                                description: description,
+                                price: price,
+                                award: award,
+                                total: total
+                                
                         
                     },:bad_request)
                 end
             else
-                json_response({customer: or_customer,item: or_item},:bad_request)
+                json_response({message: 'Not a hash',customer: or_customer, item: or_item},:bad_request)
             end
             
         else
-           json_response({customer: or_customer,itemId: itemId, customerId: customerId},:bad_request) 
+           json_response({
+                    message: 'No item or customer id',
+                    customer: or_customer['id'],
+                    itemId: itemId, 
+                    customerId: customerId},:bad_request) 
         end
     end
     
-    #GET /orders/:id 
+    #GE1T /orders/:id 
     def show 
         @item = Order.find(params[:id])
         if @item

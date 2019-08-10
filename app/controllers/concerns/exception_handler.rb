@@ -12,7 +12,7 @@ module ExceptionHandler
     end
     
     rescue_from StandardError do |e|
-      json_response({ message: e.to_s }, 500)
+      json_response({ message: e.to_s, status: "Server Fault: 500" }, 500)
     end
     
   end

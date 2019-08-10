@@ -9,14 +9,17 @@ RSpec.describe 'OrdersController', type: :request  do
 
     describe 'POST /orders' do
         let(:valid_attributes) {{ email: 'john@dow.com', itemId: 1 } }
-        let (:item_return){{
+        
+        let(:item_response) { instance_double(HTTParty::Response, body: item_response_body) }
+        let(:item_response_body) { {
                 id: 1, 
                 description: "Sexy Leya",
                 price: 99.99, 
                 stockQty: 1
-        }}
+        } }
         
-        let (:customer_return){{
+        let(:customer_response) { instance_double(HTTParty::Response, body: customer_response_body) }
+        let(:customer_response_body) { {
                 id: 1,
                 email: 'john@dow.com',
                 lastName: 'Dow', 
@@ -25,7 +28,8 @@ RSpec.describe 'OrdersController', type: :request  do
                 lastOrder2: 99.99, 
                 lastOrder3: 99.99,  
                 award: 9.99
-        }}
+        } }
+        
         
         context 'when the request is valid' do
             before {
@@ -33,8 +37,11 @@ RSpec.describe 'OrdersController', type: :request  do
                             as_stubbed_const(:transfer_nested_constants => true)
                 customer = class_double("Customer").
                             as_stubbed_const(:transfer_nested_constants => true)
-                allow(item).to receive(:id).and_return(item_return)
-                allow(customer).to receive(:email).and_return(customer_return)
+                allow(item).to receive(:id).and_return(item_response)
+                allow(JSON).to receive(:parse)
+               
+                allow(customer).to receive(:email).and_return(customer_response)
+                allow(JSON).to receive(:parse)
                 
                 post '/orders', params: valid_attributes 
                 }
@@ -43,8 +50,8 @@ RSpec.describe 'OrdersController', type: :request  do
 
                 puts JSON.parse(response.body)
                 expect(response).to have_http_status(201)
-                get '/orders'
-                puts JSON.parse(response.body)
+                #get '/orders'
+                #puts JSON.parse(response.body)
                  
             end
         end

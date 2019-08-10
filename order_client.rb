@@ -1,5 +1,53 @@
 require 'httparty'
 
+class CRJItem
+  include HTTParty
+  
+  base_uri "http://localhost:8082"
+	format :json
+
+  def CRJItem.getItem(id)
+    get('http://localhost:8082/items?id='+id)
+  end
+  
+  def CRJItem.createItem(item) 
+    post 'http://localhost:8082/items', body: item.to_json, 
+    headers:  { 'Content-Type' => 'application/json', 'ACCEPT' => 'application/json' }
+  end 
+  
+  def CRJItem.updateItem(item)
+    put "http://localhost:8082/items?id=#{item[:id]}", body: item.to_json, 
+    headers:  { 'Content-Type' => 'application/json', 'ACCEPT' => 'application/json' }
+  end
+end 
+
+class CRJCustomer
+	include HTTParty
+
+	# default_options.update(verify: false) # Turn off SSL
+    base_uri "http://localhost:8081"
+    format :json
+    
+    def CRJCustomer
+        include.new(email, firstName, lastName)
+        obj = {"email"=>email,"firstName"=>firstName,"lastName"=>lastName}
+        response = post '/customers',
+            body: obj.to_json,
+            headers: { 'Content-Type' => 'application/json',
+            'ACCEPT' => 'application/json' }
+        response
+    end
+
+    def CRJCustomer.id(id)
+        get('http://localhost:8081/customers?id='+id)
+    end
+    
+    def CRJCustomer.email(email)
+        get('http://localhost:8081/customers?email='+email)
+    end
+end
+
+
 
 class CRJOrder
   include HTTParty
@@ -7,7 +55,7 @@ class CRJOrder
   base_uri "http://localhost:8080"
 	format :json
  
-  def CRJOrder.new(itemId, email) 
+  def CRJOrder.create(itemId, email) 
     obj = {"email"=>email,"itemId"=>itemId}
     response = post '/orders',
             body: obj.to_json,
