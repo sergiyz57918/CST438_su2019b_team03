@@ -44,9 +44,9 @@ RSpec.describe 'OrdersController', type: :request  do
     end
     
     describe 'POST /orders' do
+        @headers =  { "CONTENT_TYPE" => "application/json", "ACCEPT" => "application/json"}    
         let(:valid_attributes) {{ email: 'john@dow.com', itemId: 1 } }
         
-        let(:item_response) { instance_double(HTTParty::Response, body: item_response_body.to_json, code: 200) }
         let(:item_response_body) { {
                 id: 1, 
                 description: "Sexy Leya",
@@ -54,7 +54,8 @@ RSpec.describe 'OrdersController', type: :request  do
                 stockQty: 1
         } }
         
-        let(:customer_response) { instance_double(HTTParty::Response, body: customer_response_body.to_json, code: 200) }
+        let(:item_response) { instance_double(HTTParty::Response, body: item_response_body.to_json, code: 200 ) }
+        
         let(:customer_response_body) { {
                 id: 1,
                 email: 'john@dow.com',
@@ -65,6 +66,7 @@ RSpec.describe 'OrdersController', type: :request  do
                 lastOrder3: 99.99,  
                 award: 9.99
         } }
+        let(:customer_response) {instance_double(HTTParty::Response, body: customer_response_body.to_json, code: 200) }
         
         
         context 'Stub with valid request' do
@@ -75,10 +77,10 @@ RSpec.describe 'OrdersController', type: :request  do
                             as_stubbed_const(:transfer_nested_constants => true)
                 
                 allow(item).to receive(:id).and_return(item_response)
-                allow(JSON).to receive(:parse)
+                
                
                 allow(customer).to receive(:email).and_return(customer_response)
-                allow(JSON).to receive(:parse)
+                
                 
                 post '/orders', params: valid_attributes 
                 }

@@ -63,6 +63,8 @@ class OrdersController < ApplicationController
     def create
 
         itemId = order_params[:itemId]
+        # item = Item.id(itemId)
+        # customer = Customer.email(order_params[:email])
         
         if order_params[:customerId]
             customerId = order_params[:customerId]
@@ -83,6 +85,7 @@ class OrdersController < ApplicationController
             end
             item = Item.id(itemId)
             or_item =JSON.parse(item.body)
+            
             
             if item.code.to_i==200 && customer.code.to_i==200
                 
@@ -120,15 +123,19 @@ class OrdersController < ApplicationController
                     },:bad_request)
                 end
             else
-                json_response({message: 'Not a hash',customer: or_customer, item: or_item},:bad_request)
+                json_response({message: 'No valid response from Item or Customer',
+                customer: or_customer, item: or_item},:bad_request)
             end
             
         else
            json_response({
                     message: 'No item or customer id',
-                    customer: or_customer['id'],
-                    itemId: itemId, 
-                    customerId: customerId},:bad_request) 
+                    item: item,
+                    itemId: itemId,
+                    customer: customer,
+                    # customerId: customerId,
+                    order_params: order_params
+                },:bad_request) 
         end
     end
     
