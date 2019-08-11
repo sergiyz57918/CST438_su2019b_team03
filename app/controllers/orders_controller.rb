@@ -68,7 +68,8 @@ class OrdersController < ApplicationController
             customerId = order_params[:customerId]
         elsif order_params[:email]
      
-            or_customer = JSON.parse(Customer.email(order_params[:email]).body)
+            customer = Customer.email(order_params[:email])
+            or_customer = JSON.parse(customer.body)
             customerId = or_customer['id']
         end
         
@@ -77,11 +78,13 @@ class OrdersController < ApplicationController
         
         if itemId>0 && customerId>0
             if !or_customer
-                or_customer = JSON.parse(Customer.id(customerId).body)
+                customer = Customer.id(customerId)
+                or_customer = JSON.parse(customer.body)
             end
-            or_item =Item.id(itemId)
+            item = Item.id(itemId)
+            or_item =JSON.parse(item.body)
             
-            if !or_customer.nil? && !or_item.nil?
+            if item.code.to_i==200 && customer.code.to_i==200
                 
                 price = or_item['price']
                 award = or_customer['award']

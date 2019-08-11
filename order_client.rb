@@ -55,7 +55,7 @@ class CRJOrder
   base_uri "http://localhost:8080"
 	format :json
  
-  def CRJOrder.create(itemId, email) 
+  def CRJOrder.new(itemId, email) 
     obj = {"email"=>email,"itemId"=>itemId}
     response = post '/orders',
             body: obj.to_json,
