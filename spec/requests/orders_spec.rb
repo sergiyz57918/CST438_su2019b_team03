@@ -45,6 +45,7 @@ RSpec.describe 'OrdersController', type: :request  do
     
     describe 'POST /orders' do
         @headers =  { "CONTENT_TYPE" => "application/json", "ACCEPT" => "application/json"}    
+        #Valid 
         let(:valid_attributes) {{ email: 'john@dow.com', itemId: 1 } }
         
         let(:item_response_body) { {
@@ -69,7 +70,7 @@ RSpec.describe 'OrdersController', type: :request  do
         let(:customer_response) {instance_double(HTTParty::Response, body: customer_response_body.to_json, code: 200) }
         
         
-        context 'Stub with valid request' do
+        context 'Stub with valid POST request' do
             before {
                 item = class_double("Item").
                             as_stubbed_const(:transfer_nested_constants => true)
@@ -87,10 +88,11 @@ RSpec.describe 'OrdersController', type: :request  do
         
             it 'Get user and create order' do
 
-                puts JSON.parse(response.body)
-                expect(response).to have_http_status(201)
-                #get '/orders'
                 #puts JSON.parse(response.body)
+                expect(response).to have_http_status(201)
+                get '/orders?id=1'
+                #puts JSON.parse(response.body)
+                expect(response).to have_http_status(200)
                  
             end
         end
