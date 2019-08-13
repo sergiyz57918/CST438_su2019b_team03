@@ -8,8 +8,10 @@ RSpec.describe 'OrdersController', type: :request  do
   end
 
     describe 'GET /orders' do
-        
-    
+        it 'should get all orders' do
+        get '/orders', :headers => @headers
+        expect(response).to have_http_status(200)        
+        end
     end
     
     describe 'GET /orders/:id' do
