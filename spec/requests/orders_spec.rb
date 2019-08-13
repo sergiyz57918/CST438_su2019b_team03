@@ -20,6 +20,13 @@ RSpec.describe 'OrdersController', type: :request  do
             orderRetrieve = JSON.parse(response.body)
             expect(orderRetrieve['description']).to eq order.description
         end
+        
+        it 'should not get order by id' do
+            get '/orders/2', :headers => @headers
+            expect(response).to have_http_status(500)
+        end
+        
+        
     end
     
     describe 'GET /orders?customerId=nnn' do
@@ -30,7 +37,6 @@ RSpec.describe 'OrdersController', type: :request  do
             orderRetrieve = JSON.parse(response.body)
             expect(orderRetrieve['description']).to eq order.description
         end
-    
     end
     
     describe '/orders?email=nn@nnnn' do
@@ -40,6 +46,14 @@ RSpec.describe 'OrdersController', type: :request  do
             end
             get '/orders?email=awalker@spectre.net', :headers => @headers
             expect(response).to have_http_status(200)
+        end
+        
+        it 'should not get order by email' do
+            allow(Customer).to receive(:email).and_raise(500) do
+                [500, { id:1, lastName:'Walker', firstName:'Alan', email:'awalker@spectre.net' }]
+            end
+            get '/orders?email=lance@spectre.net', :headers => @headers
+            expect(response).to have_http_status(500)
         end
     end
     
